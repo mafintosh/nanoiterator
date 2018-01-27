@@ -6,6 +6,8 @@ Lightweight and efficient iterators
 npm install nanoiterator
 ```
 
+[![build status](https://travis-ci.org/mafintosh/nanoiterator.svg?branch=master)](https://travis-ci.org/mafintosh/nanoiterator)
+
 ## Usage
 
 ``` js
