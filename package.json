@@ -1,0 +1,27 @@
+{
+  "name": "nanoiterator",
+  "version": "0.0.0",
+  "description": "Lightweight and efficient iterators",
+  "main": "index.js",
+  "dependencies": {
+    "inherits": "^2.0.3",
+    "readable-stream": "^2.3.3"
+  },
+  "devDependencies": {
+    "standard": "^10.0.3",
+    "tape": "^4.8.0"
+  },
+  "scripts": {
+    "test": "standard && tape test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mafintosh/nanoiterator.git"
+  },
+  "author": "Mathias Buus (@mafintosh)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mafintosh/nanoiterator/issues"
+  },
+  "homepage": "https://github.com/mafintosh/nanoiterator"
+}
