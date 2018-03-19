@@ -69,7 +69,7 @@ function nextDone (self, err, value) {
   if (!err && value === null) self.ended = true
   cb(err, value)
 
-  if (!self._nextQueue.length) return
+  if (self._nextCallback || !self._nextQueue.length) return
 
   self._nextCallback = self._nextQueue.shift()
   update(self)
