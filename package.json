@@ -1,6 +1,6 @@
 {
   "name": "nanoiterator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Lightweight and efficient iterators",
   "main": "index.js",
   "dependencies": {
