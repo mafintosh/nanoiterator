@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "inherits": "^2.0.3",
+    "mutexify": "^1.2.0",
     "readable-stream": "^2.3.3"
   },
   "devDependencies": {

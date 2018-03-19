@@ -1,3 +1,5 @@
+var lock = require('mutexify')
+
 module.exports = NanoIterator
 
 function NanoIterator (opts) {
@@ -11,6 +13,7 @@ function NanoIterator (opts) {
   this._nextCallback = null
   this._nextDone = nextDone.bind(null, this)
   this._openDone = openDone.bind(null, this)
+  this._lock = lock()
 
   if (opts) {
     if (opts.open) this._open = opts.open
@@ -20,14 +23,20 @@ function NanoIterator (opts) {
 }
 
 NanoIterator.prototype.next = function (cb) {
-  if (this._nextCallback || this._nextQueue.length) {
-    this._nextQueue.push(cb)
-    return
-  }
+  var self = this
 
-  this._nextCallback = cb
-  if (!this.opened) this._open(this._openDone)
-  else update(this)
+  this._lock(function (release) {
+    if (self._nextCallback || self._nextQueue.length) {
+      self._nextQueue.push(cb)
+      release()
+      return
+    }
+    release()
+
+    self._nextCallback = cb
+    if (!self.opened) self._open(self._openDone)
+    else update(self)
+  })
 }
 
 NanoIterator.prototype.destroy = function (cb) {
