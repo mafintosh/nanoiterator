@@ -51,6 +51,27 @@ tape('concurrent next', function (t) {
   })
 })
 
+tape('next inside next cb', function (t) {
+  var n = 0
+  var ite = nanoiterator({
+    next: cb => process.nextTick(cb, null, n++)
+  })
+
+  ite.next(function (err, n) {
+    t.error(err, 'no error')
+    t.same(n, 0)
+    ite.next(function (err, n) {
+      t.error(err, 'no error')
+      t.same(n, 1)
+    })
+    ite.next(function (err, n) {
+      t.error(err, 'no error')
+      t.same(n, 2)
+      t.end()
+    })
+  })
+})
+
 tape('open', function (t) {
   t.plan(4 + 2 + 2)
 
