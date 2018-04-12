@@ -168,7 +168,7 @@ tape('open fails', function (t) {
 })
 
 tape('destroy optional callback', function (t) {
-  t.plan(2)
+  t.plan(3)
 
   var ite = nanoiterator({
     next: function (cb) {
@@ -335,4 +335,38 @@ tape('to-stream destroy twice', function (t) {
 
   s.destroy()
   s.destroy()
+})
+
+tape('always async', function (t) {
+  var ite = nanoiterator({
+    next: cb => cb(null, 'hi')
+  })
+
+  var sync = true
+  ite.next(function () {
+    t.notOk(sync, 'not sync')
+    sync = true
+    ite.destroy(function () {
+      t.notOk(sync, 'not sync')
+      t.end()
+    })
+    sync = false
+  })
+  sync = false
+})
+
+tape('not double async', function (t) {
+  var ite = nanoiterator({
+    next: cb => process.nextTick(cb, null, 'hi')
+  })
+
+  var flag = false
+  ite.next(function () {
+    t.notOk(flag, 'not set')
+    t.end()
+  })
+
+  process.nextTick(function () {
+    flag = true
+  })
 })

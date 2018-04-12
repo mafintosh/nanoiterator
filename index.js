@@ -7,6 +7,7 @@ function NanoIterator (opts) {
   this.closed = false
   this.ended = false
 
+  this._nextSync = false
   this._nextQueue = []
   this._nextCallback = null
   this._nextDone = nextDone.bind(null, this)
@@ -26,8 +27,10 @@ NanoIterator.prototype.next = function (cb) {
   }
 
   this._nextCallback = cb
+  this._nextSync = true
   if (!this.opened) this._open(this._openDone)
   else update(this)
+  this._nextSync = false
 }
 
 NanoIterator.prototype.destroy = function (cb) {
@@ -44,15 +47,15 @@ NanoIterator.prototype.destroy = function (cb) {
 }
 
 NanoIterator.prototype._open = function (cb) {
-  process.nextTick(cb, null)
+  cb(null)
 }
 
 NanoIterator.prototype._destroy = function (cb) {
-  process.nextTick(cb, null)
+  cb(null)
 }
 
 NanoIterator.prototype._next = function (cb) {
-  process.nextTick(cb, new Error('_next is not implemented'))
+  cb(new Error('_next is not implemented'))
 }
 
 function noop () {}
@@ -64,6 +67,13 @@ function openDone (self, err) {
 }
 
 function nextDone (self, err, value) {
+  if (self._nextSync) return nextDoneNT(self, err, value)
+
+  if (self.closed) {
+    err = new Error('Iterator is destroyed')
+    value = null
+  }
+
   var cb = self._nextCallback
   self._nextCallback = null
   if (!err && value === null) self.ended = true
@@ -76,8 +86,7 @@ function nextDone (self, err, value) {
 }
 
 function update (self) {
-  if (self.ended) nextDoneNT(self, null, null)
-  else if (self.closed) nextDoneNT(self, new Error('Iterator is destroyed'), null)
+  if (self.ended || self.closed) nextDoneNT(self, null, null)
   else self._next(self._nextDone)
 }
 
