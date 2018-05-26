@@ -58,6 +58,22 @@ NanoIterator.prototype._next = function (cb) {
   cb(new Error('_next is not implemented'))
 }
 
+if (typeof Symbol !== 'undefined' && Symbol.asyncIterator) {
+  NanoIterator.prototype[Symbol.asyncIterator] = function () {
+    var self = this
+    return {next: nextPromise}
+
+    function nextPromise () {
+      return new Promise(function (resolve, reject) {
+        self.next(function (err, val) {
+          if (err) return reject(err)
+          resolve({value: val, done: val === null})
+        })
+      })
+    }
+  }
+}
+
 function noop () {}
 
 function openDone (self, err) {
