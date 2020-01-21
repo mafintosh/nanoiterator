@@ -61,7 +61,16 @@ NanoIterator.prototype._next = function (cb) {
 if (typeof Symbol !== 'undefined' && Symbol.asyncIterator) {
   NanoIterator.prototype[Symbol.asyncIterator] = function () {
     var self = this
-    return {next: nextPromise}
+    return {next: nextPromise, return: returnPromise}
+
+    function returnPromise () {
+      return new Promise(function (resolve, reject) {
+        self.destroy(function (err) {
+          if (err) return reject(err)
+          resolve({value: null, done: true})
+        })
+      })
+    }
 
     function nextPromise () {
       return new Promise(function (resolve, reject) {
